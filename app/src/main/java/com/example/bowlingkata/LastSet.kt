@@ -42,12 +42,12 @@ class LastSet(override val set: Int) : BaseSet {
             if(extraScore1 == null) {
                 extraScore1 = score
             }
-            if(score == 10) {
-                bowlingType = BowlingType.STRIKE
+            bowlingType = if(score == 10) {
+                BowlingType.STRIKE
             } else if(score2 > 1 && score2 + score == 10) {
-                bowlingType = BowlingType.SPARE
+                BowlingType.SPARE
             } else {
-                bowlingType = BowlingType.GENERAL
+                BowlingType.GENERAL
             }
             scoreCallBack(bowlingType, 3, score, bowlingType == BowlingType.STRIKE || bowlingType == BowlingType.SPARE)
 
@@ -55,10 +55,12 @@ class LastSet(override val set: Int) : BaseSet {
             callback(true)
         } else {
             isLastChance = true
-            if(score2 == 10) {
-                bowlingType = BowlingType.STRIKE
+            bowlingType = if(score2 == 10) {
+                BowlingType.STRIKE
             } else if(score1 > 1 && score1 + score2 == 10) {
-                bowlingType = BowlingType.SPARE
+                BowlingType.SPARE
+            } else {
+                BowlingType.GENERAL
             }
             scoreCallBack(bowlingType, 2, score, bowlingType == BowlingType.STRIKE || bowlingType == BowlingType.SPARE)
         }
