@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
                 setRandom200Score()
             }
             buttonRandomCancel.setOnClickListener {
+                binding.tv200Time.text = ""
                 isCancel = true
             }
         }
@@ -99,6 +100,7 @@ class MainActivity : AppCompatActivity() {
             tvTotalScore.text = ""
         }
         normalBindingList.clear()
+        binding.tv200Time.text = ""
         binding.llContent.removeAllViews()
         setSetLayout()
     }
@@ -147,6 +149,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRandom200Score() {
+        binding.tv200Time.text = ""
         val standard = 200
         Thread{
             isCancel = false
@@ -169,6 +172,7 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread{
                 val score = lastBinding.tvTotalScore.text.toString().toIntOrNull() ?: return@runOnUiThread
                 if(score >= standard) {
+                    binding.tv200Time.text = String.format("隨機%d次才會超過200以上", count)
                     Toast.makeText(this, "隨機${count}次才會超過200以上", Toast.LENGTH_SHORT).show()
                 }
             }
