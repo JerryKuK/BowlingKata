@@ -19,9 +19,10 @@ class LastSet(override val set: Int) : BaseSet {
             score1 = score
             if(score == 10) {
                 bowlingType = BowlingType.STRIKE
+                scoreCallBack(bowlingType, 1, score, true)
+            } else {
+                scoreCallBack(bowlingType, 1, score, false)
             }
-            scoreCallBack(bowlingType, 1, score, true)
-
             return
         }
 
