@@ -43,11 +43,27 @@
         app:layout_constraintStart_toEndOf="@+id/et_score"
         app:layout_constraintTop_toBottomOf="@+id/et_set" />
 
+    <Button
+        android:id="@+id/button_random1"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="隨機1局分數"
+        app:layout_constraintStart_toStartOf="@+id/et_score"
+        app:layout_constraintTop_toBottomOf="@+id/button_score" />
+
+    <Button
+        android:id="@+id/button_random_all"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="隨機全局分數"
+        app:layout_constraintStart_toEndOf="@+id/button_random1"
+        app:layout_constraintTop_toBottomOf="@+id/button_score" />
+
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_score"
+        app:layout_constraintTop_toBottomOf="@+id/button_random1"
         android:layout_marginTop="50dp">
 
         <LinearLayout

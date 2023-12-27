@@ -87,4 +87,8 @@ class Player(private val setCount: Int) {
         val baseSet = totalSetList[setIndex]
         return baseSet.getTotalScore()
     }
+
+    fun isLastSetFinish(): Boolean {
+        return totalSetList.lastOrNull()?.isFinishSet ?: true
+    }
 }

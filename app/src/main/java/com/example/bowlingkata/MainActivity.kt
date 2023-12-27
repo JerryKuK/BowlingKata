@@ -1,6 +1,7 @@
 package com.example.bowlingkata
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -57,6 +58,12 @@ class MainActivity : AppCompatActivity() {
             buttonScore.setOnClickListener {
                 setScoreLayout()
             }
+            buttonRandom1.setOnClickListener {
+                setRandom1Score()
+            }
+            buttonRandomAll.setOnClickListener {
+                setRandomAllScore()
+            }
         }
     }
 
@@ -89,6 +96,19 @@ class MainActivity : AppCompatActivity() {
 
             player?.sendData(number)
             etScore.setText("")
+        }
+    }
+
+    private fun setRandom1Score() {
+        val random = (Math.random() * scoreLimit).toInt() + 1
+        Log.d("setRandom1Score", "random = $random")
+        binding.etScore.setText(random.toString())
+        setScoreLayout()
+    }
+
+    private fun setRandomAllScore() {
+        while (player?.isLastSetFinish() == false) {
+            setRandom1Score()
         }
     }
 
