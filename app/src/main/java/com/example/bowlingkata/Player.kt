@@ -53,8 +53,8 @@ class Player(private val setCount: Int) {
     private fun setScoreForNewData(score: Int) {
         val baseSet = currentSetList.lastOrNull()
         baseSet?.setScore(
-            score, { bowlingType, time, score, isResetLimit ->
-                scoreListener?.invoke(baseSet.set, bowlingType, time, score, isResetLimit)
+            score, { bowlingType, time, score1, isResetLimit ->
+                scoreListener?.invoke(baseSet.set, bowlingType, time, score1, isResetLimit)
             }) {
             if (it) {
                 if(baseSet.set < setCount) {

@@ -2,6 +2,7 @@ package com.example.bowlingkata
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -14,9 +15,11 @@ import com.example.bowlingkata.databinding.BowlingNormalBinding
 class MainActivity : AppCompatActivity() {
     private var player: Player? = null
     private lateinit var binding: ActivityMainBinding
+    private lateinit var maxBindingList: List<BowlingNormalBinding>
+    private lateinit var lastBinding: BowlingLastBinding
     private val normalBindingList = mutableListOf<BowlingNormalBinding>()
-    private var lastBinding: BowlingLastBinding? = null
     private var scoreLimit = 10
+    private var isCancel = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,7 +30,20 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        initView()
         initListener()
+    }
+
+    private fun initView() {
+        val list = mutableListOf<BowlingNormalBinding>()
+        for (item in 1..10) {
+            if(item == 10) {
+                lastBinding = BowlingLastBinding.inflate(layoutInflater)
+            } else {
+                list.add(BowlingNormalBinding.inflate(layoutInflater))
+            }
+        }
+        maxBindingList = list
     }
 
     private fun initListener() {
@@ -37,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 if(text < 1) {
                     etSet.setText("1")
                 } else if(text > 10) {
-                    etSet.setText("10")
+                    etSet.setText(String.format("%d", 10))
                 }
             }
             etScore.addTextChangedListener {
@@ -49,11 +65,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             buttonSet.setOnClickListener {
-                scoreLimit = 10
-                normalBindingList.clear()
-                lastBinding = null
-                llContent.removeAllViews()
-                setSetLayout()
+                initSetLayout()
             }
             buttonScore.setOnClickListener {
                 setScoreLayout()
@@ -64,7 +76,31 @@ class MainActivity : AppCompatActivity() {
             buttonRandomAll.setOnClickListener {
                 setRandomAllScore()
             }
+            buttonRandom200.setOnClickListener {
+                setRandom200Score()
+            }
+            buttonRandomCancel.setOnClickListener {
+                isCancel = true
+            }
         }
+    }
+
+    private fun initSetLayout() {
+        scoreLimit = 10
+        maxBindingList.forEach {
+            it.tvScore1.text = ""
+            it.tvScore2.text = ""
+            it.tvTotalScore.text = ""
+        }
+        lastBinding.apply {
+            tvScore1.text = ""
+            tvScore2.text = ""
+            tvScore3.text = ""
+            tvTotalScore.text = ""
+        }
+        normalBindingList.clear()
+        binding.llContent.removeAllViews()
+        setSetLayout()
     }
 
     private fun setSetLayout() {
@@ -72,11 +108,9 @@ class MainActivity : AppCompatActivity() {
             val number = etSet.text.toString().toInt()
             for (item in 1..number) {
                 val binding = if(item == number) {
-                    val lastBinding = BowlingLastBinding.inflate(layoutInflater)
-                    this@MainActivity.lastBinding = lastBinding
-                    lastBinding
+                    this@MainActivity.lastBinding
                 } else {
-                    val binding = BowlingNormalBinding.inflate(layoutInflater)
+                    val binding = maxBindingList[item - 1]
                     normalBindingList.add(binding)
                     binding
                 }
@@ -112,11 +146,40 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setRandom200Score() {
+        val standard = 200
+        Thread{
+            isCancel = false
+            var count = 0L
+            var totalScore = lastBinding.tvTotalScore.text.toString().toIntOrNull() ?: 0
+            while(totalScore < standard && !isCancel) {
+                runOnUiThread{
+                    count ++
+                    initSetLayout()
+                    setRandomAllScore()
+                    val score = lastBinding.tvTotalScore.text.toString().toIntOrNull()
+                    if(score == null) {
+                        isCancel = true
+                    } else {
+                        totalScore = score
+                    }
+                }
+                Thread.sleep(50)
+            }
+            runOnUiThread{
+                val score = lastBinding.tvTotalScore.text.toString().toIntOrNull() ?: return@runOnUiThread
+                if(score >= standard) {
+                    Toast.makeText(this, "隨機${count}次才會超過200以上", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.start()
+    }
+
     private val getTotalScoreListener: (set: Int, totalScore: Int?) -> Unit
         get() = { set, totalScore ->
             val number = binding.llContent.childCount
             if(set == number) {
-                lastBinding?.tvTotalScore?.text = totalScore?.toString() ?: ""
+                lastBinding.tvTotalScore.text = totalScore?.toString() ?: ""
             } else {
                 normalBindingList[set - 1].tvTotalScore.text = totalScore?.toString() ?: ""
             }
@@ -126,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         get() = { set, bowlingType, time, score, isResetLimit ->
             val number = binding.llContent.childCount
             if(set == number) {
-                lastBinding?.apply {
+                lastBinding.apply {
                     when(time) {
                         1 -> tvScore1.text = getScoreString(bowlingType, score)
                         2 -> tvScore2.text = getScoreString(bowlingType, score)

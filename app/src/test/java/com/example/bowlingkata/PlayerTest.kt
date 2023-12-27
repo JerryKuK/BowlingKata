@@ -51,7 +51,7 @@ class PlayerTest {
 
     @Test
     fun sendData_10_Score() {
-        player.totalScoreListener = { set, totalScore ->
+        player.totalScoreListener = { _, _ ->
             Assert.fail("Strike要在兩球才會有分數")
         }
         player.sendData(10)
