@@ -126,6 +126,66 @@ class LastSetTest {
     }
 
     @Test
+    fun setScore0_10_10() {
+        lastSet.setScore(0, { bowlingType, time, score, b ->
+            Assert.assertEquals(BowlingType.GENERAL, bowlingType)
+            Assert.assertEquals(1, time)
+            Assert.assertEquals(0, score)
+            Assert.assertFalse(b)
+        },{
+            Assert.fail("還沒結束")
+        })
+
+        lastSet.setScore(10, { bowlingType, time, score, b ->
+            Assert.assertEquals(BowlingType.SPARE, bowlingType)
+            Assert.assertEquals(2, time)
+            Assert.assertEquals(10, score)
+            Assert.assertTrue(b)
+        },{
+            Assert.fail("還沒結束")
+        })
+
+        lastSet.setScore(10, { bowlingType, time, score, b ->
+            Assert.assertEquals(BowlingType.STRIKE, bowlingType)
+            Assert.assertEquals(3, time)
+            Assert.assertEquals(10, score)
+            Assert.assertTrue(b)
+        },{
+            Assert.assertTrue(it)
+        })
+    }
+
+    @Test
+    fun setScore10_0_10() {
+        lastSet.setScore(10, { bowlingType, time, score, b ->
+            Assert.assertEquals(BowlingType.STRIKE, bowlingType)
+            Assert.assertEquals(1, time)
+            Assert.assertEquals(10, score)
+            Assert.assertTrue(b)
+        },{
+            Assert.fail("還沒結束")
+        })
+
+        lastSet.setScore(0, { bowlingType, time, score, b ->
+            Assert.assertEquals(BowlingType.GENERAL, bowlingType)
+            Assert.assertEquals(2, time)
+            Assert.assertEquals(0, score)
+            Assert.assertFalse(b)
+        },{
+            Assert.fail("還沒結束")
+        })
+
+        lastSet.setScore(10, { bowlingType, time, score, b ->
+            Assert.assertEquals(BowlingType.SPARE, bowlingType)
+            Assert.assertEquals(3, time)
+            Assert.assertEquals(10, score)
+            Assert.assertTrue(b)
+        },{
+            Assert.assertTrue(it)
+        })
+    }
+
+    @Test
     fun setScore5_5_10() {
         lastSet.setScore(5, { bowlingType, time, score, b ->
             Assert.assertEquals(BowlingType.GENERAL, bowlingType)

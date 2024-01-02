@@ -30,7 +30,12 @@ class LastSet(override val set: Int) : BaseSet {
     }
 
     override fun isStrike(score: Int): Boolean {
-        return score == 10
+        val score1 = score1
+        val score2 = score2
+        return (score1 == null ||
+                score1 == 10 && score2 == null ||
+                (score2 ?: 0) > 0 && score1 + (score2 ?: 0) == 10 ||
+                score2 == 10) && score == 10
     }
 
     override fun isSpare(score: Int): Boolean {
