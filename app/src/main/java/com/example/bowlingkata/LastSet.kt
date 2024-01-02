@@ -15,56 +15,59 @@ class LastSet(override val set: Int) : BaseSet {
         scoreCallBack:(BowlingType?, Int, Int, Boolean) -> Unit,
         callback: (isFinish: Boolean) -> Unit
     ) {
-        if(score1 == null) {
-            score1 = score
-            if(score == 10) {
-                bowlingType = BowlingType.STRIKE
-                scoreCallBack(bowlingType, 1, score, true)
-            } else {
-                scoreCallBack(bowlingType, 1, score, false)
-            }
-            return
+        bowlingType = when {
+            isStrike(score) -> BowlingType.STRIKE
+            isSpare(score) -> BowlingType.SPARE
+            else -> BowlingType.GENERAL
         }
-
-        if(score2 == null) {
-            score2 = score
+        val count = setScoreAndGetCount(score) {
+            isFinishSet = it
         }
-
-        val score1 = score1 ?: return
-        val score2 = score2 ?: return
-        if(score1 + score2 < 10) {
-            isFinishSet = true
-            bowlingType = BowlingType.GENERAL
-            scoreCallBack(bowlingType, 2, score, true)
-
+        scoreCallBack(bowlingType, count, score, bowlingType == BowlingType.STRIKE || bowlingType == BowlingType.SPARE || isFinishSet)
+        if(isFinishSet) {
             callback(true)
-            return
-        } else if(isLastChance) {
-            if(extraScore1 == null) {
-                extraScore1 = score
-            }
-            bowlingType = if(score == 10) {
-                BowlingType.STRIKE
-            } else if(score2 > 1 && score2 + score == 10) {
-                BowlingType.SPARE
-            } else {
-                BowlingType.GENERAL
-            }
-            scoreCallBack(bowlingType, 3, score, bowlingType == BowlingType.STRIKE || bowlingType == BowlingType.SPARE)
+        }
+    }
 
-            isFinishSet = true
-            callback(true)
+    override fun isStrike(score: Int): Boolean {
+        return score == 10
+    }
+
+    override fun isSpare(score: Int): Boolean {
+        val score1 = score1
+        val score2 = score2
+        return if(score1 != null && score2 == null) {
+            score1 != 10 && score1 + score == 10
+        } else if(score1 != null && score2 != null) {
+            score2 != 10 && score2 + score == 10
         } else {
-            isLastChance = true
-            bowlingType = if(score2 == 10) {
-                BowlingType.STRIKE
-            } else if(score1 > 1 && score1 + score2 == 10) {
-                BowlingType.SPARE
-            } else {
-                BowlingType.GENERAL
-            }
-            scoreCallBack(bowlingType, 2, score, bowlingType == BowlingType.STRIKE || bowlingType == BowlingType.SPARE)
+            false
         }
+    }
+
+    override fun setScoreAndGetCount(score: Int, isFinish: (Boolean) -> Unit): Int {
+        return if(score1 == null) {
+            score1 = score
+            1
+        } else if(score2 == null) {
+            isLastChance = setLastChance(score)
+            score2 = score
+            if(!isLastChance) {
+                isFinish(true)
+            }
+            2
+        } else if(isLastChance && extraScore1 == null) {
+            extraScore1 = score
+            isFinish(true)
+            3
+        } else {
+            -1
+        }
+    }
+
+    private fun setLastChance(score: Int): Boolean {
+        val score1 = score1 ?: return false
+        return score1 + score >= 10
     }
 
     override fun getTotalScore(): Int? {

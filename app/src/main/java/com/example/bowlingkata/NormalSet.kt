@@ -14,37 +14,47 @@ class NormalSet(override val set: Int) : BaseSet {
         scoreCallBack:(BowlingType?, Int, Int, Boolean) -> Unit,
         callback: (isFinish: Boolean) -> Unit
     ) {
-        if(score1 == null) {
-            score1 = score
-            if(score1 == 10) {
-                bowlingType = BowlingType.STRIKE
-                scoreCallBack(bowlingType, 1, score, true)
-
+        when {
+            isStrike(score) -> {
                 isFinishSet = true
-                callback(true)
-            } else {
-                scoreCallBack(bowlingType, 1, score, false)
+                bowlingType = BowlingType.STRIKE
             }
-            return
+            isSpare(score) -> {
+                isFinishSet = true
+                bowlingType = BowlingType.SPARE
+            }
+            else -> {
+                bowlingType = BowlingType.GENERAL
+            }
         }
+        val count = setScoreAndGetCount(score) {
+            isFinishSet = it
+        }
+        scoreCallBack(bowlingType, count, score, isFinishSet)
+        if(isFinishSet) {
+            callback(true)
+        }
+    }
 
-        if(score2 == null) {
+    override fun isStrike(score: Int): Boolean {
+        return score1 == null && score == 10
+    }
+
+    override fun isSpare(score: Int): Boolean {
+        val score1 = score1 ?: return false
+        return score1 != 10 && score1 + score == 10
+    }
+
+    override fun setScoreAndGetCount(score: Int, isFinish: (Boolean) -> Unit): Int {
+        return if(score1 == null) {
+            score1 = score
+            1
+        } else if(score2 == null) {
             score2 = score
-        }
-
-        isFinishSet = true
-        val score1 = score1 ?: return
-        val score2 = score2 ?: return
-        if(score1 + score2 == 10) {
-            bowlingType = BowlingType.SPARE
-            scoreCallBack(bowlingType, 2, score, true)
-
-            callback(true)
+            isFinish(true)
+            2
         } else {
-            bowlingType = BowlingType.GENERAL
-            scoreCallBack(bowlingType, 2, score, true)
-
-            callback(true)
+            -1
         }
     }
 

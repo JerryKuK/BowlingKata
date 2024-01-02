@@ -149,12 +149,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRandom200Score() {
+        binding.etSet.requestFocus()
+
         binding.tv200Time.text = ""
         val standard = 200
         Thread{
             isCancel = false
             var count = 0L
-            var totalScore = lastBinding.tvTotalScore.text.toString().toIntOrNull() ?: 0
+            var totalScore = 0
             while(totalScore < standard && !isCancel) {
                 runOnUiThread{
                     count ++

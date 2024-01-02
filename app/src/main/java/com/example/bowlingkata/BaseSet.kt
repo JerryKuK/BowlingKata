@@ -14,5 +14,8 @@ interface BaseSet {
         scoreCallBack:(BowlingType?, Int, Int, Boolean) -> Unit,
         callback: (isFinish: Boolean) -> Unit
     )
+    fun isStrike(score: Int): Boolean
+    fun isSpare(score: Int): Boolean
+    fun setScoreAndGetCount(score: Int, isFinish: (Boolean) -> Unit): Int
     fun getTotalScore(): Int?
 }
